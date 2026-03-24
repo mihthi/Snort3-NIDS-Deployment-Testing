@@ -1,0 +1,18 @@
+-- Đường dẫn file trên hệ thống: /usr/local/etc/snort/snort.lua
+
+-- 1. Định nghĩa mạng nội bộ cần bảo vệ (Dải IP VMware của bạn)
+HOME_NET = '192.168.208.0/24'
+EXTERNAL_NET = '!HOME_NET'
+
+-- 2. Cấu hình nạp file luật local.rules
+ips = 
+{
+    rules = [[
+        include /usr/local/etc/snort/rules/local.rules
+    ]],
+}
+
+-- 3. Thiết lập hiển thị cảnh báo (Output)
+alert_fast = { file = false }
+alert_full = { file = true }
+alert_console = { } -- Hiển thị trực tiếp trên màn hình console
