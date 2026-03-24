@@ -1,4 +1,4 @@
-# 🚨 Triển khai Hệ thống Phát hiện Xâm nhập Mạng (NIDS) sử dụng Snort 3 trên VMware
+# 🚨 Triển khai Hệ thống Phát hiện Xâm nhập Mạng (NIDS) sử dụng Snort 3 trên VMware 
 
 Dự án này tập trung vào việc **nghiên cứu, cài đặt và cấu hình hệ thống phát hiện xâm nhập mã nguồn mở Snort 3 (phiên bản 3.7.1.0)** trong môi trường ảo hóa.
 
