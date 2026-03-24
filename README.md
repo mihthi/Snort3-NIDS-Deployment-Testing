@@ -1,68 +1,92 @@
-Dự án này tập trung vào việc nghiên cứu, cài đặt và cấu hình hệ thống phát hiện xâm nhập mã nguồn mở Snort 3 (phiên bản 3.7.1.0). Hệ thống được triển khai trên môi trường ảo hóa VMware Workstation để giám sát và đưa ra cảnh báo thời gian thực đối với các cuộc tấn công mạng phổ biến.
+# 🚨 SNORT 3 IDS  
+## Phân tích & Triển khai Hệ thống Phát hiện Xâm nhập trên VMware
 
-📋 Mục tiêu đồ án
+Dự án này tập trung vào việc **nghiên cứu, cài đặt và cấu hình hệ thống phát hiện xâm nhập mã nguồn mở Snort 3 (phiên bản 3.7.1.0)** trong môi trường ảo hóa.
 
-Xây dựng hệ thống NIDS: Triển khai trên Ubuntu 22.04 và CentOS 7.
+Hệ thống đóng vai trò như **một lớp bảo mật giám sát**, giúp **nhận diện sớm các hành vi bất thường hoặc các cuộc tấn công trái phép trong mạng**.
 
+---
 
-Phát hiện tấn công: Thiết lập bộ quy tắc (local.rules) để nhận diện các hành vi xâm nhập.
+# 🎯 Mục tiêu & Phạm vi dự án
 
+## 📚 Nghiên cứu IDS
+Tìm hiểu các kiến thức nền tảng về hệ thống phát hiện xâm nhập:
 
-Đánh giá hiệu năng: Tối ưu hóa tỷ lệ phát hiện (TPR) và giảm thiểu báo động giả (FPR).
+- Khái niệm và vai trò của **Intrusion Detection System (IDS)**
+- Nguyên lý hoạt động của:
+  - **NIDS (Network-based IDS)** – giám sát lưu lượng mạng
+  - **HIDS (Host-based IDS)** – giám sát trên từng máy chủ
 
-🛠️ Cấu trúc các file cấu hình
-Dự án bao gồm các file cốt lõi đã được tinh chỉnh bám sát thực tế:
+## ⚙️ Triển khai thực tế
+Cài đặt và tối ưu hóa **Snort 3** trên hai nền tảng Linux phổ biến:
 
-snort.lua: File cấu hình chính, định nghĩa mạng nội bộ 192.168.208.0/24.
+- **Ubuntu 22.04**
+- **CentOS 7**
 
-local.rules: Chứa các luật phát hiện tấn công (ICMP Flood, Port Scanning, Brute Force, SYN Flood).
+## 🖥️ Môi trường thử nghiệm
+Toàn bộ mô hình được triển khai trong **VMware Workstation**, giúp:
 
+- Kiểm soát hoàn toàn môi trường mạng
+- Mô phỏng các kịch bản tấn công
+- Thử nghiệm và đánh giá hệ thống một cách linh hoạt
 
-testing_scenarios.sh: Tập hợp các kịch bản tấn công dùng để demo.
+## 🤖 Tự động hóa cảnh báo
+Tích hợp **Telegram Bot** để:
 
-🚀 Hướng dẫn vận hành hệ thống
-Phần này tổng hợp các câu lệnh quan trọng mà tôi đã thực hiện trong quá trình triển khai trên terminal:
+- Nhận cảnh báo xâm nhập
+- Theo dõi hệ thống **trực tiếp trên điện thoại theo thời gian thực**
 
-1. Kiểm tra cấu hình (Configuration Validation)
-Trước khi chạy, cần xác nhận các file cấu hình và luật không có lỗi cú pháp:
+---
 
-Bash
-sudo snort -c /usr/local/etc/snort/snort.lua -R /usr/local/etc/snort/rules/local.rules -T
-Lưu ý: Hệ thống sẽ trả về thông báo Snort successfully validated the configuration nếu thành công.
+# ⚙️ Các thành phần triển khai chính
 
-2. Khởi chạy giám sát thời gian thực
-Sử dụng lệnh sau để Snort bắt đầu lắng nghe lưu lượng trên card mạng ảo (ví dụ: ens33):
+Dự án được tổ chức dựa trên **ba trụ cột kỹ thuật cốt lõi**:
 
-Bash
-sudo snort -i ens33 -c /usr/local/etc/snort/snort.lua -A alert_fast
--i ens33: Chọn giao diện mạng để giám sát.
+---
 
--A alert_fast: Hiển thị cảnh báo rút gọn ngay lập tức trên màn hình.
+## 🧠 Cấu hình hệ thống – `snort.lua`
 
-🧪 Kịch bản kiểm thử (Demo Scenarios)
-Các cuộc tấn công giả lập đã được thực hiện thành công từ máy tấn công nhắm vào địa chỉ 192.168.208.129:
+Đây là **file cấu hình trung tâm của Snort**, đóng vai trò như **"bộ não" của hệ thống**.
 
-ICMP Flood: ping -f 192.168.208.129.
+Chức năng chính:
 
-Quét cổng (Nmap): nmap -sS 192.168.208.129 hoặc nmap -sX 192.168.208.129.
+- Định nghĩa **phạm vi mạng nội bộ cần bảo vệ**
+- Cấu hình các **module phân tích gói tin**
+- Nạp các **rule phát hiện tấn công**
 
-Ping of Death: sudo hping3 -1 -d 65000 --frag -c 5 192.168.208.129.
+---
 
-DoS (SYN Flood): sudo hping3 -S --flood -p 80 192.168.208.129.
+## 📜 Kỹ thuật xây dựng luật – `local.rules`
 
-Brute Force SSH: hydra -l root -P mylist.txt -t 4 ssh://192.168.208.129.
+File này chứa các **bộ quy tắc (rules)** được xây dựng để nhận diện các loại tấn công phổ biến.
 
-📂 Nguyên lý hoạt động
-Snort 3 vận hành thông qua các giai đoạn:
+Hệ thống phát hiện **5 loại tấn công trọng điểm**:
 
+### ICMP Flood & Ping of Death
+Các cuộc tấn công **từ chối dịch vụ (DoS)** thông qua giao thức **ICMP**.
 
-Packet Decoder: Giải mã gói tin từ card mạng ảo.
+### Port Scanning
+Phát hiện các kỹ thuật **dò quét cổng** phổ biến như:
 
+- **SYN Scan**
+- **FIN Scan**
+- **Xmas Scan**
+- **ACK Scan**
 
-Preprocessor: Tiền xử lý và chuẩn hóa dữ liệu.
+### Brute Force SSH
+Phát hiện các cuộc tấn công **dò mật khẩu đăng nhập SSH trái phép**.
 
+### SYN Flood
+Tấn công **DoS** khai thác **quy trình bắt tay 3 bước (TCP Three-way Handshake)** của giao thức TCP.
 
-Detection Engine: So khớp với tập luật local.rules.
+---
 
+## 📡 Hệ thống cảnh báo từ xa
 
-Logging/Alerting: Xuất cảnh báo khi có sự trùng khớp.
+Hệ thống sử dụng **script Python** để kết nối **Snort với Telegram API**.
+
+Chức năng:
+
+- Đọc log cảnh báo từ Snort
+- Gửi thông báo tới **Telegram Bot**
+- Giúp quản trị viên **theo dõi hệ thống mọi lúc mọi nơi**
