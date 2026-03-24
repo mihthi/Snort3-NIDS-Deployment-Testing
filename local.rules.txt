@@ -1,23 +1,19 @@
-# Đường dẫn file trên hệ thống: /usr/local/etc/snort/rules/local.rules
+# Đường dẫn: /usr/local/etc/snort/rules/local.rules
 
-# [NHÓM 1: PHÁT HIỆN TẤN CÔNG TỪ CHỐI DỊCH VỤ - DoS/Flood]
-# Phát hiện ICMP Flood (100 gói trong 5 giây)
-alert icmp any any -> $HOME_NET any (msg:"[ALERT] ICMP Flood Detected! - Có máy đang ping flood vào!"; itype:8; detection_filter:track by_src, count 100, seconds 5; sid:1000101; rev:1;)
+# [PHÁT HIỆN ICMP FLOOD]
+alert icmp any any -> $HOME_NET any (msg:"[ALERT] ICMP Flood Detected! - Có máy đang ping flood vào!"; itype:8; detection_filter:track by_src, count 100, seconds 5; sid:1000101; rev:1;) [cite: 52]
 
-# Phát hiện SYN Flood (Tấn công DoS đánh vào hệ thống)
-alert tcp any any -> $HOME_NET any (msg:"[ALERT] SYN Flood Detected - Tấn công SYN Flood!"; flags:S; detection_filter:track by_src, count 20, seconds 1; sid:1000100; rev:2;)
+# [PHÁT HIỆN PING OF DEATH]
+alert icmp any any -> $HOME_NET any (msg:"[ALERT] Ping of Death Detected!"; dsize:>1400; itype:8; sid:1000105; rev:2;) [cite: 54]
 
-# [NHÓM 2: PHÁT HIỆN DÒ QUÉT HỆ THỐNG - Port Scanning]
-# Phát hiện các kiểu quét cổng TCP (SYN, FIN, Xmas, ACK scan)
-alert tcp any any -> any any (msg:"[ALERT] Port Scanning Detected - SYN scan pattern!!"; flags:S; detection_filter:track by_src, count 15, seconds 5; sid:1000010; rev:2;)
-alert tcp any any -> any any (msg:"[ALERT] Port Scanning Detected - FIN scan pattern!!"; flags:F; detection_filter:track by_src, count 15, seconds 5; sid:1000011; rev:1;)
-alert tcp any any -> any any (msg:"[ALERT] Port Scanning Detected - Xmas scan pattern!!"; flags:FPU; detection_filter:track by_src, count 5, seconds 5; sid:1000012; rev:2;)
-alert tcp any any -> any any (msg:"[ALERT] Port Scanning Detected - ACK scan pattern!!"; flags:A; detection_filter:track by_src, count 15, seconds 5; sid:1000013; rev:1;)
+# [PHÁT HIỆN PORT SCANNING]
+alert tcp any any -> any any (msg:"[ALERT] Port Scanning Detected - SYN scan pattern!!"; flags:S; detection_filter:track by_src, count 15, seconds 5; sid:1000010; rev:2;) [cite: 57]
+alert tcp any any -> any any (msg:"[ALERT] Port Scanning Detected - FIN scan pattern!!"; flags:F; detection_filter:track by_src, count 15, seconds 5; sid:1000011; rev:1;) [cite: 58]
+alert tcp any any -> any any (msg:"[ALERT] Port Scanning Detected - Xmas scan pattern!!"; flags:FPU; detection_filter:track by_src, count 5, seconds 5; sid:1000012; rev:2;) [cite: 59]
+alert tcp any any -> any any (msg:"[ALERT] Port Scanning Detected - ACK scan pattern!!"; flags:A; detection_filter:track by_src, count 15, seconds 5; sid:1000013; rev:1;) [cite: 59]
 
-# [NHÓM 3: PHÁT HIỆN TẤN CÔNG XÂM NHẬP - Brute Force]
-# Phát hiện dò mật khẩu SSH (5 lần thử trong 30 giây)
-alert tcp any any -> $HOME_NET 22 (msg:"[ALERT] SSH Brute Force Detected - Tấn công brute force SSH!"; flow:to_server,established; detection_filter:track by_src, count 5, seconds 30; classtype:attempted-admin; sid:1000003; rev:4;)
+# [PHÁT HIỆN SSH BRUTE FORCE]
+alert tcp any any -> $HOME_NET 22 (msg:"[ALERT] SSH Brute Force Detected - Tấn công brute force SSH!"; flow:to_server,established; detection_filter:track by_src, count 5, seconds 30; classtype:attempted-admin; sid:1000003; rev:4;) [cite: 61]
 
-# [NHÓM 4: PHÁT HIỆN GÓI TIN BẤT THƯỜNG]
-# Phát hiện Ping of Death qua kích thước gói tin lớn (>1400 bytes)
-alert icmp any any -> $HOME_NET any (msg:"[ALERT] Ping of Death Detected!"; dsize:>1400; itype:8; sid:1000105; rev:2;)
+# [PHÁT HIỆN SYN FLOOD]
+alert tcp any any -> $HOME_NET any (msg:"[ALERT] SYN Flood Detected - Tấn công SYN Flood!"; flags:S; detection_filter:track by_src, count 20, seconds 1; sid:1000100; rev:2;) [cite: 63]
